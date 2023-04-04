@@ -15,7 +15,7 @@ The code in this replication includes:
 
 # Data availability
 
-The MSCI and S&P 100 data used to support the findings of this study are publicly available. The MSCI data were collected from the link: https://www.msci.com. The S&P 100 data were collected from the link https://finance.yahoo.com. The S&P 500 data were downloaded (with license) from the link: https://macrobond.com.
+The MSCI and S&P 100 data used to support the findings of this study are publicly available. The MSCI data were collected from the link: https://www.msci.com. The S&P 100 data were collected from the link https://finance.yahoo.com. The S&P 500 data were downloaded (license required) from the link: https://macrobond.com.
 
 The raw data file for the MSCI indices is MSCI.xls. The raw data file for the S&P 100 indices is SP100.xls and can found under the . Both are provided in the replication package. 
 
@@ -57,7 +57,10 @@ Outputs:
 - gamma_opt: optimal tuning parameter select by the K-fold cross-validation procedure
 - Psi: variance-covariance matrix (diagonal) of the idiosyncratic errors
 
-In the context of time dependent data, the function *sparse_factor_TS.m* should be used by the replicator as it employs a different procedure for selecting the optimal tuning parameter.
+**sparse_factor_TS.m**:
+
+In the context of time dependent data, the function *sparse_factor_TS.m* should be used by the replicator as it employs a different procedure for selecting the optimal tuning parameter. The purpose of the function is the same as *sparse_factor.m*.
+
 <p align="center">
 [Lambda,gamma_opt,Psi] = sparse_factor_TS(X,m,gamma,loss,method,Lambda_first,Psi_first)
 </p>
@@ -80,3 +83,6 @@ The four different sparsity patterns in $\Lambda$ considered in the experiments 
 
 # On the tuning parameter $\gamma_n$
 
+The selection of an optimal tuning parameter for SCAD/MCP relies on a K-fold cross-validation (K=5 by default) with parallelization, when the data are i.i.d.: in that case, *sparse_factor.m* should be employed. If the data are time series data, *sparse_factor_TS.m* should be considered: it employs an out-of-sample approach for cross-validation, where 75% of the data are used for training and the remaining 25% is used as the test sample. In both case, the cross-validation score function is minimized over the grid of $\gamma_n$ candidates defined as $c\sqrt{\log(p)/n}$, where $c$ a user-specified grid of values. The computation time will also depend on the size of the set of values c selected for cross-validation to choose the optimal $\gamma_n$. To save run-time computation, the user may set a smaller grid. 
+
+Another point worth mentioning is the scale of c, which should be suitably calibrated depending on the dimension $p$. Based on multiple empirical experiments, for low-dimensional $p$ (i.e., $p \leq 100$), c is typically set as $c = 0.01,0.1,0.2,\ldots,4$, which provides optimal performances. For larger $p$, c should be calibrated as $c = m \times (0.1,0.2,\ldots,4)$, with $m$ the number of factors.
