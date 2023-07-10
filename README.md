@@ -9,7 +9,7 @@ Sparse factor models of high-dimension, by Benjamin Poignard and Yoshikazu Terad
 The code in this replication includes:
 
 - The different sparsity patterns for sparse factor loading matrix considered in the simulated experiments: the replicator should execute program *simulations.m*.
-- The real data experiment for the MSCI and S&P 100 portfolios: the replicator should execute program *real_data_analysis.m*.
+- The real data experiment for the MSCI and S&P 100 portfolios: the replicator should execute program *real_data_analysis.m*. The performance metrics AVG, SD and IR for the two portfolios and the two out-of-sample periods under consideration are stored in "Results_1", "Results_2", "Results_3", "Results_4".
 
 # Data availability
 
