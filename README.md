@@ -28,7 +28,11 @@ The Matlab code was run on a Mac-OS Apple M1 Ultra with 20 cores and 128 GB Memo
 The following toolboxes should be installed:
 
 - Statistics and Machine Learning Toolbox, Version 12.3.
-- Parallel Computing Toolbox, Version 7.6. Parallel Computing Toolbox is highly recommended to run the code to speed up the cross-validation procedure employed to select the optimal tuning parameter. All the run-time requirements displayed below are reported when the code is run with the Parallel Computing Toolbox.
+- Parallel Computing Toolbox, Version 7.6.
+- Global Optimization Toolbox, Version 4.7.
+- Optimization Toolbox, Version 9.3.
+
+The Parallel Computing Toolbox is highly recommended to run the code to speed up the cross-validation procedure employed to select the optimal tuning parameter. 
 
 # Description of the code
 
