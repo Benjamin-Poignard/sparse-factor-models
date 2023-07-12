@@ -17,7 +17,7 @@ The MSCI and S&P 100 data used to support the findings of this study are publicl
 
 The full sample period of the MSCI data is: 12/31/1998 - 03/12/2018. The full sample period of the S&P 100 data is: 18/02/2010 - 01/23/2020. The S&P 100 indices contains the 94 assets considered in the paper: AbbVie Inc., Dow Inc., General Motors, Kraft Heinz, Kinder Morgan and PayPal Holdings are excluded from the original dataset. 
 
-The raw data file for the MSCI indices is MSCI.xls. The raw data file for the S&P 100 indices is SP100.xls and the S&P 100 data used in the paper (excluding AbbVie Inc., Dow Inc., General Motors, Kraft Heinz, Kinder Morgan and PayPal Holdings) are stored in *data_SP.mat*. The replicator can access both MSCI and S&P 100 datasets.
+The raw data file for the MSCI indices is *MSCI.xls*. The raw data file for the S&P 100 indices is *SP100.xls* and the S&P 100 data used in the paper (excluding AbbVie Inc., Dow Inc., General Motors, Kraft Heinz, Kinder Morgan and PayPal Holdings) are stored in *data_SP.mat*. The replicator can access both MSCI and S&P 100 datasets.
 
 # Software requirements
 
