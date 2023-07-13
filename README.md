@@ -2,7 +2,9 @@
 
 Matlab implementation of sparse factor models based on the paper:
 
-Sparse factor models of high-dimension, by Benjamin Poignard and Yoshikazu Terada.
+*Sparse factor models of high-dimension* by Benjamin Poignard and Yoshikazu Terada.
+
+Link: https://arxiv.org/abs/2307.05952
 
 # Overview
 
