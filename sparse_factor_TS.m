@@ -14,8 +14,8 @@ function [Lambda,gamma_opt,Psi] = sparse_factor_TS(X,m,loss,gamma,method,Lambda_
 %          errors, jointly obtained with Lambda_first
 % Outputs:
 %          - Lambda: sparse factor loading matrix
-%          - gamma_opt: optimal tuning parameter selected by the K-fold
-%          cross-validation procedure
+%          - gamma_opt: optimal tuning parameter selected by the
+%          out-of-sample cross-validation procedure
 %          - Psi: variance-covariance matrix (diagonal) of the
 %          idiosyncratic errors
 
@@ -63,7 +63,7 @@ while count < max_iter
     
     param_psi_update = diag(Psi_step); param_lambda_update = lambda_step;
     
-    if (norm([param_psi_update;param_lambda_update] - [param_psi;param_lambda])^2/max([1,norm([param_psi_update;param_lambda_update]),norm([param_psi_update;param_lambda])]) <= Tol)
+    if (norm([param_psi_update;param_lambda_update] - [param_psi;param_lambda])/max([1,norm([param_psi_update;param_lambda_update]),norm([param_psi_update;param_lambda])]) <= Tol)
         break
     end
     
