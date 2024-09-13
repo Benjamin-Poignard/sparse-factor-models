@@ -69,7 +69,7 @@ while count < max_iter
     
     param_psi_update = diag(Psi_step); param_lambda_update = lambda_step;
     
-    error = norm([param_psi_update;param_lambda_update] - [param_psi;param_lambda])/max([1,norm([param_psi_update;param_lambda_update]),norm([param_psi_update;param_lambda])]);
+    error = norm([param_psi_update;param_lambda_update] - [param_psi;param_lambda])/max([1,norm([param_psi_update;param_lambda_update]),norm([param_psi;param_lambda])]);
     if (error <= Tol)
         break
     end
