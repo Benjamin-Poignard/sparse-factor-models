@@ -11,7 +11,8 @@ Link: https://arxiv.org/abs/2307.05952
 The code in this replication includes:
 
 - The different sparsity patterns for sparse factor loading matrix considered in the simulated experiments: the replicator should execute program *simulations.m*.
-- The real data experiment for the MSCI and S&P 100 portfolios: the replicator should execute program *real_data_analysis.m*. 
+- The real data experiment for the MSCI and S&P 100 portfolios: the replicator should execute program *real_data_analysis.m*.
+- The real data experiment for diffusion index data: the replicator should refer to *multilagforecast.m*.
 
 # Data availability
 
@@ -20,6 +21,8 @@ The MSCI and S&P 100 data used to support the findings of this study are publicl
 The full sample period of the MSCI data is: 12/31/1998 - 03/12/2018. The full sample period of the S&P 100 data is: 18/02/2010 - 01/23/2020. The S&P 100 indices contains the 94 assets considered in the paper: AbbVie Inc., Dow Inc., General Motors, Kraft Heinz, Kinder Morgan and PayPal Holdings are excluded from the original dataset. 
 
 The raw data file for the MSCI indices is *MSCI.xls*. The raw data file for the S&P 100 indices is *SP100.xls* and the S&P 100 data used in the paper (excluding AbbVie Inc., Dow Inc., General Motors, Kraft Heinz, Kinder Morgan and PayPal Holdings) are stored in *data_SP.mat*. The replicator can access both MSCI and S&P 100 datasets.
+
+The diffusion index data can be found in *lndata.mat*. The code *multilagforecast.m* is a direct extension of the paper of Bai and Liao (2016): https://econweb.rutgers.edu/yl1114/papers/factor3/factor3.html
 
 # Software requirements
 
