@@ -84,7 +84,7 @@ while i<maxIt
             
     end
     
-    error = (norm(vec(Lambda - Lambda_old))/max([1,norm(vec(Lambda)),norm(vec(Lambda_old))]));
+    error = (norm(vec(Lambda - Lambda_old))^2/max([1,norm(vec(Lambda)),norm(vec(Lambda_old))]));
     error_check(i) = error;
     if (error<crit)
         break;
