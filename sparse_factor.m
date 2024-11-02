@@ -45,7 +45,7 @@ param_psi_update = diag(Psi_step); param_lambda_update = vec(Lambda_step);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%% Iterate until convergence %%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Tol = 10^(-5); count = 0; max_iter = 500; error_update = 1;
+Tol = 10^(-5); count = 0; max_iter = 500; error_update = zeros(max_iter,1);
 while count < max_iter
     
     count = count+1;
@@ -60,8 +60,7 @@ while count < max_iter
     else
         Lambda = reshape(param_lambda,p,m);
     end
-    Psi = diag(param_psi);
-    [Lambda_step,gamma_opt] = lambda_penalized(X,m,Lambda,Psi,loss,gamma,method,K);
+    [Lambda_step,gamma_opt] = lambda_penalized(X,m,Lambda,diag(param_psi),loss,gamma,method,K);
     lambda_step = vec(Lambda_step);
     
     % Psi-step
@@ -73,7 +72,7 @@ while count < max_iter
     if (error <= Tol)
         break
     end
-    error_update = [ error_update ; error ];
+    error_update(count) = error;
     if (abs(error_update(end)-error_update(end-1))<0.0001)
         break
     end

@@ -29,7 +29,7 @@ end
 eta = 200;
 % calibration of the step size
 nu = (1/eta)/(1+(mu/eta));
-maxIt = 80e3; crit = 10^(-8); i = 0;
+maxIt = 50e3; crit = 10^(-8); i = 0;
 
 Lambda = Lambda_first; Lambda_old = Lambda;
 error_check = zeros(maxIt,1);
@@ -84,7 +84,7 @@ while i<maxIt
             
     end
     
-    error = (norm(vec(Lambda - Lambda_old))^2/max([1,norm(vec(Lambda)),norm(vec(Lambda_old))]));
+    error = (norm(vec(Lambda - Lambda_old))/max([1,norm(vec(Lambda)),norm(vec(Lambda_old))]));
     error_check(i) = error;
     if (error<crit)
         break;
@@ -92,7 +92,7 @@ while i<maxIt
     
     % Re-initialization if necessary with different step size
     if ((i>10e3)&&(error_check(i)>error_check(i-1)))
-        eta = 3*eta; i = 0;
+        eta = 1.5*eta; i = 0;
         nu = (1/eta)/(1+(mu/eta));
         sampling_size = 100;
         loss_eval = zeros(sampling_size,1); Q_sampling = zeros(m,m,sampling_size);

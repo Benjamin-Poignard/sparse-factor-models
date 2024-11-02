@@ -54,8 +54,7 @@ while count < max_iter
     else
         Lambda = reshape(param_lambda,p,m);
     end
-    Psi = diag(param_psi);
-    [Lambda_step,gamma_opt] = lambda_penalized_TS(X,m,Lambda,Psi,loss,gamma,method);
+    [Lambda_step,gamma_opt] = lambda_penalized_TS(X,m,Lambda,diag(param_psi),loss,gamma,method);
     lambda_step = vec(Lambda_step);
     
     % Psi-step
