@@ -44,7 +44,7 @@ The main function to conduct the joint estimation of the factor model parameters
 Purpose of the function: jointly estimate $(\Lambda,\Psi)$ under the sparsity constraint for $\Lambda$ and the diagonal constraint for $\Psi$, for a given loss function (Gaussian or least squares) and a given penalty function (SCAD or MCP). The implementation is based on the LQ-algorithm described in the paper (see the section "Implementations"). A K-fold cross-validation procedure is employed to select the optimal tuning parameter $\gamma_n$ when the data are i.i.d.
 
 <p align="center">
-[Lambda,gamma_opt,Psi] = sparse_factor(X,m,loss,gamma,method,K,Lambda_first,Psi_first)
+[Lambda,gamma_opt,Psi] = sparse_factor(X,m,loss,gamma,method,K,Lambda_init,Psi_init)
 </p>
 
 Inputs:
@@ -52,7 +52,7 @@ Inputs:
 - m: number of factors (a priori set by the user)
 - loss: 'Gaussian' or 'LS' ('LS' stands for least squares)
 - gamma: tuning parameter (grid of candidates set by the user)
-- method: SCAD or MCP penalization (a_scad = 3.7, b_mcp = 3.5): see lambda_penalized.m to modify a_scad and b_mcp
+- method: SCAD or MCP penalization (a_scad = 3.7, b_mcp = 3.5)
 - K (optional input): number of folds for cross-validation; K must be larger strictly than 2
 - Lambda_first (optional input): inital parameter value for the factor loading matrix
 - Psi_first (optional input): inital parameter value for the variance-covariance matrix (diagonal) of the idiosyncratic errors, jointly obtained with Lambda_first
@@ -67,7 +67,7 @@ Outputs:
 In the context of time dependent data, the function *sparse_factor_TS.m* should be used by the replicator as it employs a different procedure for selecting the optimal tuning parameter. This function is run in *real_data_analysis.m*. The purpose of the function is the same as *sparse_factor.m*.
 
 <p align="center">
-[Lambda,gamma_opt,Psi] = sparse_factor_TS(X,m,loss,gamma,method,Lambda_first,Psi_first)
+[Lambda,gamma_opt,Psi] = sparse_factor_TS(X,m,loss,gamma,method,Lambda_init,Psi_init)
 </p>
 
 Inputs:
@@ -76,7 +76,7 @@ Inputs:
 - m: number of factors (a priori set by the user)
 - loss: 'Gaussian' or 'LS' ('LS' stands for least squares)
 - gamma: tuning parameter (grid of candidates set by the user)
-- method: SCAD or MCP penalization (a_scad = 3.7, b_mcp = 3.5): see lambda_penalized.m to modify a_scad and b_mcp
+- method: SCAD or MCP penalization (a_scad = 3.7, b_mcp = 3.5)
 - Lambda_first (optional input): inital parameter value for the factor loading matrix
 - Psi_first (optional input): inital parameter value for the variance-covariance matrix (diagonal) of the idiosyncratic errors, jointly obtained with Lambda_first
 
