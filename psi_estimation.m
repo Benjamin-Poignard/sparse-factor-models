@@ -1,4 +1,4 @@
-function Psi = psi_estimation(X,m,Lambda,Psi_init,loss)
+function [Psi,param_psi] = psi_estimation(X,m,Lambda,Psi_init,loss)
 
 % Inputs:
 %          - X: n x p matrix of observations
@@ -26,3 +26,4 @@ while likelihoodlambda(Sy,Lambda,Psi_old,loss)-likelihoodlambda(Sy,Lambda,Psi,lo
     Psi=diag(diag(M));
     kk=kk+1 ;
 end
+param_psi = diag(Psi);

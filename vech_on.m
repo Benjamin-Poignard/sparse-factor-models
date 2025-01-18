@@ -1,8 +1,8 @@
 function Mt = vech_on(M,d)
 
 % Inputs: 
-% matrice M
-% d: taille de la matrice
+% Marix (square) M
+% d: size of M
 
 Mt = [];
 

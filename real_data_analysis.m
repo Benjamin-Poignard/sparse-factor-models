@@ -1,7 +1,7 @@
 clear
 clc
 % Select the portfolio: 'MSCI' or 'SP100'
-portfolio = 'MSCI'; scale = 100;
+portfolio = 'SP100'; scale = 100;
 
 switch portfolio
     
@@ -41,7 +41,7 @@ T_out = size(X_out,1);
 number_factors = factor_selection(X,6);
 
 % Specification of the number of factors for estimation
-factor = [1 2 3 4 5]; 
+factor = [1 2 3 4 5];
 
 K = length(factor);
 
@@ -49,24 +49,21 @@ w_scad_g = zeros(p,K); w_mcp_g = zeros(p,K);
 w_scad_ls = zeros(p,K); w_mcp_ls = zeros(p,K);
 w_saf = zeros(p,K);
 
-ranking_scad_g_ed = zeros(T_out,K); ranking_mcp_g_ed = zeros(T_out,K);
-ranking_scad_ls_ed = zeros(T_out,K); ranking_mcp_ls_ed = zeros(T_out,K);
-ranking_saf_ed = zeros(T_out,K);
-
-ranking_scad_g_fn = zeros(T_out,K); ranking_mcp_g_fn = zeros(T_out,K);
-ranking_scad_ls_fn = zeros(T_out,K); ranking_mcp_ls_fn = zeros(T_out,K);
-ranking_saf_fn = zeros(T_out,K);
-
 for j = 1:K
     
     % selection of the number of factors (user-specified in factor)
     m = factor(j);
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%% First step under IC5 %%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % First step estimation for initialization (factor model under IC5
-    % constraint for Lambda and diagonal variance-covariance Psi)
+    %%%%%%%%%%%%%%%%%%%%%%%%% Sparse Factor Model %%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%% Initial estimator %%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % First step estimation for initialization
     [Lambda_g,Psi_g] = non_penalized_factor(X,m,'Gaussian');
     
     [Lambda_ls,Psi_ls] = non_penalized_factor(X,m,'LS');
@@ -82,13 +79,11 @@ for j = 1:K
     [Lambda_scad_g,gamma_opt_scad_g,Psi_scad_g] = sparse_factor_TS(X,m,loss,gamma,method,Lambda_g,Psi_g);
     Sigma_scad_g = Lambda_scad_g*Lambda_scad_g'+ Psi_scad_g;
     w_scad_g(:,j) = GMVP(Sigma_scad_g);
-    [ED,FN] = ranking_metric(X_out,Sigma_scad_g,scale); ranking_scad_g_ed(:,j) = ED; ranking_scad_g_fn(:,j) = FN;
     
     method = 'mcp';
     [Lambda_mcp_g,gamma_opt_mcp_g,Psi_mcp_g] = sparse_factor_TS(X,m,loss,gamma,method,Lambda_g,Psi_g);
     Sigma_mcp_g = Lambda_mcp_g*Lambda_mcp_g'+ Psi_mcp_g;
     w_mcp_g(:,j) = GMVP(Sigma_mcp_g);
-    [ED,FN] = ranking_metric(X_out,Sigma_mcp_g,scale); ranking_mcp_g_ed(:,j) = ED; ranking_mcp_g_fn(:,j) = FN;
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%% Least squares loss %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -99,16 +94,19 @@ for j = 1:K
     [Lambda_scad_ls,gamma_opt_scad_ls,Psi_scad_ls] = sparse_factor_TS(X,m,loss,gamma,method,Lambda_ls,Psi_ls);
     Sigma_scad_ls = Lambda_scad_ls*Lambda_scad_ls'+ Psi_scad_ls;
     w_scad_ls(:,j) = GMVP(Sigma_scad_ls);
-    [ED,FN] = ranking_metric(X_out,Sigma_scad_ls,scale); ranking_scad_ls_ed(:,j) = ED; ranking_scad_ls_fn(:,j) = FN;
     
     method = 'mcp';
     [Lambda_mcp_ls,gamma_opt_mcp_ls,Psi_mcp_ls] = sparse_factor_TS(X,m,loss,gamma,method,Lambda_ls,Psi_ls);
     Sigma_mcp_ls = Lambda_mcp_ls*Lambda_mcp_ls'+ Psi_mcp_ls;
     w_mcp_ls(:,j) = GMVP(Sigma_mcp_ls);
-    [ED,FN] = ranking_metric(X_out,Sigma_mcp_ls,scale); ranking_mcp_ls_ed(:,j) = ED; ranking_mcp_ls_fn(:,j) = FN;
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SAF %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     grid = m*[0.001 0.002:0.005:10]; gamma = grid*sqrt(log(p*(p+1)/2)/n_period);
@@ -116,19 +114,18 @@ for j = 1:K
     [Lambda_saf,gamma_opt_saf,Psi_saf] = approx_factor_TS(X,m,gamma);
     Sigma_saf = Lambda_saf*Lambda_saf'+ Psi_saf;
     w_saf(:,j) = GMVP(Sigma_saf);
-    [ED,FN] = ranking_metric(X_out,Sigma_saf,scale); ranking_saf_ed(:,j) = ED; ranking_saf_fn(:,j) = FN;
-    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end
 
 % sample variance-covariance estimator-based GMVP
-w_sample = GMVP(cov(X)); [ranking_sample_ed,ranking_sample_fn] = ranking_metric(X_out,cov(X),scale);
+w_sample = GMVP(cov(X));
 % geometric-inverse shrinkage (GIS) estimator-based GMVP
-w_gis = GMVP(GIS(X)); [ranking_gis_ed,ranking_gis_fn] = ranking_metric(X_out,GIS(X),scale);
+w_gis = GMVP(GIS(X));
 % one-factor market model shrinkage estimator-based GMVP
-w_covMarket = GMVP(covMarket(X)); [ranking_covM_ed,ranking_covM_fn] = ranking_metric(X_out,covMarket(X),scale); ranking_covM = [ED,FN];
+w_covMarket = GMVP(covMarket(X));
 
 % scalar DCC variance-covariance process
-[~,~,Hdcc] = dcc_mvgarch_for(returns,method_dcc,n_period); [ranking_dcc_ed,ranking_dcc_fn] = ranking_metric(X_out,Hdcc,scale);
+[~,~,Hdcc] = dcc_mvgarch_for(returns,method_dcc,n_period);
 
 % out-of-sample portfolio weights and returns for the fixed estimators
 W = [w_scad_g w_mcp_g w_scad_ls w_mcp_ls w_saf w_sample w_gis w_covMarket];
@@ -154,14 +151,6 @@ e_gmvp = [e_gmvp e_dcc];
 Results = [252*mean(e_gmvp);sqrt(252)*std(e_gmvp);(252*mean(e_gmvp))./(sqrt(252)*std(e_gmvp))]';
 E_gmvp = e_gmvp.^2;
 
-E_ed = [ranking_scad_g_ed ranking_mcp_g_ed ranking_scad_ls_ed ranking_mcp_ls_ed...
-    ranking_saf_ed ranking_sample_ed ranking_gis_ed ranking_covM_ed];
-E_ed_av = 252*mean(E_ed);
-
-E_fn = [ranking_scad_g_fn ranking_mcp_g_fn ranking_scad_ls_fn ranking_mcp_ls_fn...
-    ranking_saf_fn ranking_sample_fn ranking_gis_fn ranking_covM_fn];
-E_fn_av = 252*mean(E_fn);
-
 % Model confidence set (MCS) at the 10% significance level with block
 % bootstrap (see Hansen et al. (2003)) with 10,000 replications
 
@@ -169,13 +158,3 @@ E_fn_av = 252*mean(E_fn);
 [includedR, pvalsR_gmvp, excluded] = mcs(E_gmvp,0.1,10000,12);
 excl_select_model_gmvp = [excluded ;includedR];
 [excl_select_model_gmvp pvalsR_gmvp]
-
-% Model Confidence Test Euclidean distance loss
-[includedR, pvalsR_ed, excluded] = mcs(E_ed,0.1,10000,12);
-excl_select_model_ed = [excluded ;includedR];
-[excl_select_model_ed pvalsR_ed]
-
-% Model Confidence Test Frobenius norm loss
-[includedR, pvalsR_fn, excluded] = mcs(E_fn,0.1,10000,12);
-excl_select_model_fn = [excluded ;includedR];
-[excl_select_model_fn pvalsR_fn]

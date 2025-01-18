@@ -24,9 +24,8 @@ SuPCA=uhat*uhat'/T;
 LPCA=LamPCA;
 SigPCA=SuPCA;
 
-%%%%%%%%%%%% Calculate SFM (diagonal Max Likelihood of Bai and Li 2012)
-%%%%%%%%%%%% using EM algorithm
-%%%%%%%%%%%% SFM estimate uses PCA as initial value
+%%%%%%%%%%%% Calculate SFM (diagonal Max Likelihood of Bai and Li 2012) as initial value
+%%%%%%%%%% SFM estimate uses PCA as initial value
 Sy=X'*X/T;
 kk=1;
 Lambda0=ones(N,m)*10;

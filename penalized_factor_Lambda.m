@@ -1,9 +1,9 @@
-function [Lambda,param_lambda] = penalized_factor_Lambda(X,m,Lambda_first,Psi,loss,gamma,method)
+function [Lambda,param_lambda] = penalized_factor_Lambda(X,m,Lambda_init,Psi,loss,gamma,method)
 
 % Inputs:
 %          - X: n x p matrix of observations
 %          - m: number of factors (a priori set by the user)
-%          - Lambda_first: p x m inital parameter value
+%          - Lambda_init: p x m inital parameter value
 %          for the factor loading matrix
 %          - Psi: diagonal variance-covariance matrix  of the idiosyncratic
 %          errors obtained in Psi-step
@@ -31,7 +31,7 @@ eta = 200;
 nu = (1/eta)/(1+(mu/eta));
 maxIt = 80e3; crit = 10^(-8); i = 0;
 
-Lambda = Lambda_first; Lambda_old = Lambda;
+Lambda = Lambda_init; Lambda_old = Lambda;
 error_check = zeros(maxIt,1);
 
 while i<maxIt
@@ -84,31 +84,13 @@ while i<maxIt
             
     end
     
-    error = (norm(vec(Lambda - Lambda_old))^2/max([1,norm(vec(Lambda)),norm(vec(Lambda_old))]));
+    error = (norm(vec(Lambda - Lambda_old))/max([1,norm(vec(Lambda)),norm(vec(Lambda_old))]));
     error_check(i) = error;
     if (error<crit)
         break;
-    end
-    
-    % Re-initialization if necessary with different step size
-    if ((i>10e3)&&(error_check(i)>error_check(i-1)))
-        eta = 1.5*eta; i = 0;
-        nu = (1/eta)/(1+(mu/eta));
-        sampling_size = 100;
-        loss_eval = zeros(sampling_size,1); Q_sampling = zeros(m,m,sampling_size);
-        for kk = 1:sampling_size
-            [Q,~] = qr(rand(p,m)'); Q = Q';
-            [param_est,out]= OptStiefelGBB(Q,@(x)Q_orthonormal(x,Lambda_first,m,gamma,method));
-            Q_sampling(:,:,kk) = reshape(param_est,m,m); loss_eval(kk) = out.fval;
-        end
-        [~,index] = min(loss_eval); Q_step = Q_sampling(:,:,index);
-        Lambda = Lambda*Q_step;
     end
     
     Lambda_old = Lambda;
     
 end
 param_lambda = vec(Lambda);
-if i == maxIt
-    fprintf('%s\n', 'Maximum number of iterations reached, gradient descent may not converge.');
-end

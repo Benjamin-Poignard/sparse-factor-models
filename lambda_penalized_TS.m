@@ -30,11 +30,11 @@ if length(gamma)>1
         S = cov(X_out); Sigma = Lambda*Lambda'+Psi;
         switch loss
             case 'Gaussian'
-                L =  ( log(det(Sigma))+trace(S/Sigma) );
+                L =  ( log(abs(det(Sigma)))+trace(S/Sigma) );
             case 'LS'
                 L = norm(S-Sigma,'fro')^2;
         end
-        count(ii) = count(ii) + L;
+        count(ii) = L;
     end
     clear ii kk
     ii = count==min(min(count)); gamma_opt = gamma(ii); Lambda_init_opt = Lambda_init(:,:,ii);

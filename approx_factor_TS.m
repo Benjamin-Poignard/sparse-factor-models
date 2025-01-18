@@ -1,20 +1,16 @@
 function [Lambda,gamma_opt,Psi] = approx_factor_TS(X,m,gamma)
 
-% Sparse approximate factor estimator of Bai and Liao (2016), 'Efficient 
-% estimation of approximate factor models via penalized maximum
-% likelihood', Journal of Econometrics, 191 (1), 1-18
-
+% Sparse Approximate Factor model estimation (Bai and Liao 2016)
+% URL: https://econweb.rutgers.edu/yl1114/papers/factor3/factor3.html
 % Inputs:
 %          - X: n x p matrix of observations
 %          - m: number of factors (a priori set by the user)
-%          - gamma: tuning parameter (grid of candidates set by the user)
+%          - gamma: tuning parameter (grid of values, user specified)
+
 % Outputs:
-%          - Lambda: factor loading matrix satisfying
-%          Lambda' x inv(Psi) x Lambda diagonal
-%          - gamma_opt: optimal tuning parameter selected by the K-fold
-%          cross-validation procedure
-%          - Psi: sparse approximate variance-covariance matrix of the
-%          idiosyncratic errors obtained by the EM algorithm
+%          - Lambda: estimated sparse loading matrix
+%          - gamma_opt: optimal tuning parameter selected by CV
+%          - Psi: estimated covariance (diagonal) of idiosyncratic errors 
 
 [T,N]=size(X);
 
@@ -53,33 +49,31 @@ while likelihoodlambda(Sy,Lambda0,Psi_old,'Gaussian')-likelihoodlambda(Sy,Lambda
 end
 Lambda_init = Lambda; Psi_init = Psi;
 
-[T,p] = size(X);
+[T,p] = size(X); mu = 1;
 if length(gamma)>1
-    % If gamma is a vector, then a 5-fold cross-validation is performed to
-    % select the optimal tuning parameter
     dim = p*m;
     len_in = round(0.75*T); X_in = X(1:len_in,:); X_out = X(len_in+1:T,:);
     theta_lambda_fold = zeros(dim,length(gamma)); psi_fold = zeros(p*(p+1)/2,length(gamma));
     parfor jj = 1:length(gamma)
-        [theta_lambda_fold(:,jj),psi_fold(:,jj)] = EM_algorithm(X_in,m,0.08,gamma(jj),Lambda_init,Psi_init);
+        [theta_lambda_fold(:,jj),psi_fold(:,jj)] = EM_algorithm(X_in,m,gamma(jj),mu,Lambda_init,Psi_init);
     end
     count = zeros(length(gamma),1);
     for ii = 1:length(gamma)
         Lambda = reshape(theta_lambda_fold(:,ii),p,m); Psi = dvech(psi_fold(:,ii),p);
         S = cov(X_out); Sigma = Lambda*Lambda'+Psi;
-        L =  ( log(det(Sigma))+trace(S/Sigma) );
-        count(ii) = count(ii) + L;
+        L =  ( log(abs(det(Sigma)))+trace(S/Sigma) );
+        count(ii) = L;
     end
     clear ii kk
     ii = count==min(min(count)); gamma_opt = gamma(ii);
     if length(gamma_opt)>1
         gamma_opt = gamma(1);
     end
-    [param_lambda,param_psi] = EM_algorithm(X,m,0.08,gamma_opt,Lambda_init,Psi_init);
-    Lambda = reshape(param_lambda,p,m); Psi = dvech(param_psi,p);
+    [param_lambda,param_psi] = EM_algorithm(X,m,gamma_opt,mu,Lambda_init,Psi_init);
+    Lambda = reshape(param_lambda,p,m); Psi = dvech(param_psi,p); 
 else
     % If gamma is a scalar, then no cross-validation is performed
     gamma_opt = gamma;
-    [param_lambda,param_psi] = EM_algorithm(X,m,0.08,gamma_opt,Lambda_init,Psi_init);
-    Lambda = reshape(param_lambda,p,m); Psi = dvech(param_psi,p);
+    [param_lambda,param_psi] = EM_algorithm(X,m,gamma_opt,mu,Lambda_init,Psi_init);
+    Lambda = reshape(param_lambda,p,m); Psi = dvech(param_psi,p); 
 end

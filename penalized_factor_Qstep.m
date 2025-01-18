@@ -17,7 +17,7 @@ function [Lambda_rotated,Q_step] = penalized_factor_Qstep(Lambda_first,m,gamma,m
 % 'A feasible method for optimization with orthogonality constraints',
 % Mathematical Programming 142 (1-2), 397–434.
 
-p = size(Lambda_first,1); sampling_size = 400;
+p = size(Lambda_first,1); sampling_size = 200;
 if length(gamma)>1
     Q_step = zeros(m,m,length(gamma));
     parfor i=1:length(gamma)

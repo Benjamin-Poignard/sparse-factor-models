@@ -1,4 +1,4 @@
-function [Lambda,gamma_opt,Psi] = sparse_factor(X,m,loss,gamma,method,K,Lambda_first,Psi_first)
+function [Lambda,gamma_opt,Psi] = sparse_factor(X,m,loss,gamma,method,K,Lambda_init,Psi_init)
 
 % Inputs:
 %          - X: n x p matrix of observations
@@ -28,57 +28,19 @@ end
 % if no first step estimator for Lambda and Psi are provided, then the
 % initial values run the following function to get an initial point
 if nargin < 7
-    [Lambda_first,Psi_first] = non_penalized_factor(X,m,loss);
+    [Lambda_init,Psi_init] = non_penalized_factor(X,m,loss);
 end
 
-p = size(X,2);
+% Initialization
+[Lambda_rotated,~] = penalized_factor_Qstep(Lambda_init,m,gamma,method);
 
-% Lambda-step estimation
-[Lambda_rotated,~] = penalized_factor_Qstep(Lambda_first,m,gamma,method);
-[Lambda_step,gamma_opt] = lambda_penalized(X,m,Lambda_rotated,Psi_first,loss,gamma,method,K);
+% Iteration to obtain (Lambda,Psi)
+[Lambda,gamma_opt,Psi] = cv_sfm(X,m,Lambda_rotated,Psi_init,loss,gamma,method,K);
 
-% Psi-step estimation
-Psi_step = psi_estimation(X,m,Lambda_step,Psi_first,loss);
-
-param_psi_update = diag(Psi_step); param_lambda_update = vec(Lambda_step);
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%% Iterate until convergence %%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Tol = 10^(-5); count = 0; max_iter = 500; error_update = zeros(max_iter,1);
-while count < max_iter
-    
-    count = count+1;
-    param_psi = param_psi_update; param_lambda = param_lambda_update;
-    
-    % Lambda-step
-    if length(gamma)>1
-        Lambda = zeros(p,m,length(gamma));
-        for i=1:length(gamma)
-            Lambda(:,:,i) = reshape(param_lambda,p,m);
-        end
-    else
-        Lambda = reshape(param_lambda,p,m);
-    end
-    [Lambda_step,gamma_opt] = lambda_penalized(X,m,Lambda,diag(param_psi),loss,gamma,method,K);
-    lambda_step = vec(Lambda_step);
-    
-    % Psi-step
-    Psi_step = psi_estimation(X,m,Lambda_step,diag(param_psi),loss);
-    
-    param_psi_update = diag(Psi_step); param_lambda_update = lambda_step;
-    
-    error = norm([param_psi_update;param_lambda_update] - [param_psi;param_lambda])/max([1,norm([param_psi_update;param_lambda_update]),norm([param_psi;param_lambda])]);
-    if (error <= Tol)
-        break
-    end
-    error_update(count) = error;
-    if (abs(error_update(end)-error_update(end-1))<0.0001)
-        break
-    end
-    
+if max(abs(vec(Lambda)))>20
+    Lambda = Lambda_init; Psi = Psi_init;
 end
-Psi = diag(param_psi_update); Lambda = reshape(param_lambda_update,p,m);
+
 switch loss
     case 'Gaussian'
         switch method

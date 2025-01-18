@@ -674,7 +674,7 @@ X = X';
 
 % Select the number of folds for the cross-validation to select the optimal
 % tuning parameter
-gamma = [0.3 (0.35:0.2:4.5)]*sqrt(log(p*m)/n);
+gamma = (0.01:0.1:5)*sqrt(log(p*m)/n);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Gaussian loss %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
