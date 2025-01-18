@@ -13,7 +13,7 @@ function [Lambda,gamma_opt,Psi] = sparse_factor(X,m,loss,gamma,method,K,Lambda_i
 %          factor loading matrix
 %          - Psi_init (optional input): inital parameter value for the
 %          variance-covariance matrix (diagonal) of the idiosyncratic
-%          errors, jointly obtained with Lambda_first
+%          errors, jointly obtained with Lambda_init
 % Outputs:
 %          - Lambda: sparse factor loading matrix
 %          - gamma_opt: optimal tuning parameter selected by the K-fold
