@@ -1,4 +1,4 @@
-function [lambda_sol,psi_sol] = EM_algorithm(X,m,lambda,gamma,Lambda_init,Psi_init)
+function [lambda_sol,psi_sol] = EM_algorithm(X,m,gamma,mu,Lambda_init,Psi_init)
 
 % EM algorithm for joint estimation of Lambda and Psi (sparse non-diagonal)
 
@@ -7,6 +7,7 @@ function [lambda_sol,psi_sol] = EM_algorithm(X,m,lambda,gamma,Lambda_init,Psi_in
 %          - m: number of factors (a priori set by the user)
 %          - lambda: step size
 %          - gamma: tuning parameter (grid of candidates set by the user)
+%          - mu: adaptive parameter (set by the user)
 %          - Lambda_init: initial value of the factor loading matrix satisfying
 %          Lambda_init' x inv(Psi_init) x Lambda_init diagonal
 %          - Psi_init: variance-covariance matrix (diagonal) of the idiosyncratic
@@ -29,11 +30,11 @@ Eff=eye(m)-Lambda0'*A*Lambda0+Lambda0'*A*C;
 Lambda=C*inv(Eff);
 Su=Sy-C*Lambda'-Lambda*C'+Lambda*Eff*Lambda';
 KML=Sigmaold-t*(inv(Sigmaold)-inv(Sigmaold)*Su*inv(Sigmaold));
-P=Pmatrix(Su,gamma);
-B=lambda*t*P;
+P=Pmatrix(Su,mu);
+B=gamma*t*P;
 Sigma1=soft(KML,B);
-kk=1;
-while  likelihoodTrue(Sy,P,Sigmaold,Lambda0,lambda)- likelihoodTrue(Sy,P,Sigma1,Lambda,lambda)>10^(-7)&kk<5000
+kk = 1;
+while  likelihoodTrue(Sy,P,Sigmaold,Lambda0,gamma)- likelihoodTrue(Sy,P,Sigma1,Lambda,gamma)>10^(-7)&kk<5000
     Sigmaold=Sigma1;
     Lambda0=Lambda;
     A=inv(Lambda0*Lambda0'+Sigma1);
@@ -42,10 +43,10 @@ while  likelihoodTrue(Sy,P,Sigmaold,Lambda0,lambda)- likelihoodTrue(Sy,P,Sigma1,
     Lambda=C*inv(Eff);
     Su=Sy-C*Lambda'-Lambda*C'+Lambda*Eff*Lambda';
     KML=Sigmaold-t*(inv(Sigmaold)-inv(Sigmaold)*Su*inv(Sigmaold));
-    P=Pmatrix(Su,gamma);
-    B=lambda*t*P;
+    P=Pmatrix(Su,mu);
+    B=gamma*t*P;
     Sigma1=soft(KML,B);
     kk=kk+1;
 end
-lambda_sol=vec(Lambda0);
-psi_sol=vech(Sigmaold);
+lambda_sol=vec(Lambda);
+psi_sol=vech(Sigma1);
