@@ -5,15 +5,14 @@ function [Lambda,gamma_opt,Psi] = sparse_factor(X,m,loss,gamma,method,K,Lambda_i
 %          - m: number of factors (a priori set by the user)
 %          - loss: 'Gaussian' or 'LS' ('LS' stands for least squares)
 %          - gamma: tuning parameter (grid of candidates set by the user)
-%          - method: SCAD or MCP penalization (a_scad = 3.7, b_mcp = 3.5):
-%          see lambda_penalized.m to modify a_scad and b_mcp
+%          - method: SCAD or MCP penalization (a_scad = 3.7, b_mcp = 3.5)
 %          - K (optional input): number of folds for cross-validation; K
 %          must be larger strictly than 2
 %          - Lambda_first (optional input): inital parameter value for the
 %          factor loading matrix
 %          - Psi_first (optional input): inital parameter value for the
 %          variance-covariance matrix (diagonal) of the idiosyncratic
-%          errors, jointly obtained with Lambda_first
+%          errors, jointly obtained with Lambda_init
 % Outputs:
 %          - Lambda: sparse factor loading matrix
 %          - gamma_opt: optimal tuning parameter selected by the K-fold
