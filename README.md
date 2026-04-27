@@ -10,9 +10,9 @@ Link: https://arxiv.org/abs/2307.05952
 
 The code in this replication includes:
 
-- The different sparsity patterns for sparse factor loading matrix considered in the simulated experiments: the replicator should execute program *simulations.m*.
-- The real data experiment for the MSCI and S&P 100 portfolios: the replicator should execute program *real_data_analysis.m*.
-- The real data experiment for diffusion index data: the replicator should refer to *multilagforecast.m*.
+- The different sparsity patterns for sparse factor loading matrix considered in the simulated experiments: the replicator should execute program *main_simulations.m*.
+- The real data experiment for the MSCI and S&P 100 portfolios: the replicator should execute program *main_real_data.m*.
+- The real data experiment for diffusion index data: the replicator should refer to *main_multilagforecast.m*.
 
 # Data availability
 
