@@ -22,7 +22,7 @@ The full sample period of the MSCI data is: 12/31/1998 - 03/12/2018. The full sa
 
 The raw data file for the MSCI indices is *MSCI.xls*. The raw data file for the S&P 100 indices is *SP100.xls* and the S&P 100 data used in the paper (excluding AbbVie Inc., Dow Inc., General Motors, Kraft Heinz, Kinder Morgan and PayPal Holdings) are stored in *data_SP.mat*. The replicator can access both MSCI and S&P 100 datasets.
 
-The diffusion index data can be found in *lndata.mat*. The code *multilagforecast.m* is a direct extension of the paper of Bai and Liao (2016): https://econweb.rutgers.edu/yl1114/papers/factor3/factor3.html
+The diffusion index data can be found in *lndata.mat*. The code *main_multilagforecast.m* is a direct extension of the paper of Bai and Liao (2016): https://econweb.rutgers.edu/yl1114/papers/factor3/factor3.html
 
 # Software requirements
 
